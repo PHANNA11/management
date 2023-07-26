@@ -23,6 +23,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  CollectionReference usersdata =
+      FirebaseFirestore.instance.collection('users');
+
   // Future getUsers(String docId) async {
   //   final docProduct =
   //       FirebaseFirestore.instance.collection('users').doc(docId);
@@ -46,34 +49,62 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Home Screen')),
-      body: ListView.builder(
-          itemCount: docIds.length,
-          itemBuilder: (context, index) {
-            return FutureBuilder(
-              future: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(docIds[index])
-                  .get(),
-              builder: (context, snapshot) {
-                return snapshot.hasError
-                    ? const Center(
-                        child: Icon(
-                          Icons.info,
-                          color: Colors.red,
-                        ),
-                      )
-                    : snapshot.connectionState == ConnectionState.waiting
-                        ? const Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : Card(
-                            child: ListTile(
-                            title: Text(snapshot.data!['name']),
-                            subtitle: Text('age: ${snapshot.data!['age']}'),
-                          ));
-              },
-            );
-          }),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: usersdata.snapshots(),
+        builder: (context, snapshot) {
+          return snapshot.hasError
+              ? const Center(
+                  child: Icon(
+                    Icons.info,
+                    color: Colors.red,
+                  ),
+                )
+              : snapshot.connectionState == ConnectionState.waiting
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        var user = snapshot.data!.docs[index];
+                        return Card(
+                          child: ListTile(
+                            title: Text(user['name']),
+                            subtitle: Text('age: ${user['age']}'),
+                          ),
+                        );
+                      },
+                    );
+        },
+      ),
+      // body: ListView.builder(
+      //     itemCount: docIds.length,
+      //     itemBuilder: (context, index) {
+      //       return FutureBuilder(
+      //         future: FirebaseFirestore.instance
+      //             .collection('users')
+      //             .doc(docIds[index])
+      //             .get(),
+      //         builder: (context, snapshot) {
+      //           return snapshot.hasError
+      //               ? const Center(
+      //                   child: Icon(
+      //                     Icons.info,
+      //                     color: Colors.red,
+      //                   ),
+      //                 )
+      //               : snapshot.connectionState == ConnectionState.waiting
+      //                   ? const Center(
+      //                       child: CircularProgressIndicator(),
+      //                     )
+      //                   : Card(
+      //                       child: ListTile(
+      //                       title: Text(snapshot.data!['name']),
+      //                       subtitle: Text('age: ${snapshot.data!['age']}'),
+      //                     ));
+      //         },
+      //       );
+      //     }),
     );
   }
 }
