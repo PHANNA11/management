@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_app/model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -66,11 +67,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   : ListView.builder(
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
-                        var user = snapshot.data!.docs[index];
+                        var user =
+                            User.fromDocument(snapshot.data!.docs[index]);
                         return Card(
                           child: ListTile(
-                            title: Text(user['name']),
-                            subtitle: Text('age: ${user['age']}'),
+                            title: Text(user.name),
+                            subtitle: Text('age: ${user.age}'),
                           ),
                         );
                       },
