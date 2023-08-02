@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_app/detail_profile.dart';
 import 'package:firebase_app/model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -71,8 +72,32 @@ class _HomeScreenState extends State<HomeScreen> {
                             User.fromDocument(snapshot.data!.docs[index]);
                         return Card(
                           child: ListTile(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DetailProfile(
+                                        user: user, images: user.profileCover),
+                                  ));
+                            },
+                            leading: CircleAvatar(
+                              maxRadius: 30,
+                              backgroundImage: NetworkImage(user.profile),
+                            ),
                             title: Text(user.name),
                             subtitle: Text('age: ${user.age}'),
+                            trailing: IconButton(
+                                onPressed: () async {
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(snapshot
+                                          .data!.docs[index].reference.id)
+                                      .delete();
+                                },
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                )),
                           ),
                         );
                       },
@@ -107,6 +132,20 @@ class _HomeScreenState extends State<HomeScreen> {
       //         },
       //       );
       //     }),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () async {
+      //     var data = User(
+      //             age: 23,
+      //             gender: 'Male',
+      //             id: 2345,
+      //             name: 'Lyly',
+      //             profile:
+      //                 'https://marketplace.canva.com/EAFXS8-cvyQ/1/0/1600w/canva-brown-and-light-brown%2C-circle-framed-instagram-profile-picture-2PE9qJLmPac.jpg')
+      //         .toMap();
+      //     await FirebaseFirestore.instance.collection('users').add(data);
+      //   },
+      //   child: const Icon(Icons.add),
+      // ),
     );
   }
 }
