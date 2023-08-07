@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_app/detail_profile.dart';
 import 'package:firebase_app/model/user_model.dart';
+import 'package:firebase_app/storage_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -50,7 +51,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home Screen')),
+      appBar: AppBar(
+        title: const Text('Home Screen'),
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const StorageHome(),
+                  )),
+              icon: const Icon(Icons.image))
+        ],
+      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: usersdata.snapshots(),
         builder: (context, snapshot) {
@@ -77,7 +89,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DetailProfile(
-                                        user: user, images: user.profileCover),
+                                        user: user,
+                                        images: user.profileCover,
+                                        docId: snapshot
+                                            .data!.docs[index].reference.id),
                                   ));
                             },
                             leading: CircleAvatar(
